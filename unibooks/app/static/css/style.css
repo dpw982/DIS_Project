@@ -89,3 +89,23 @@ nav ul li a:hover {
 nav ul li a.active {
   background-color: #e8a3a3;
 }
+
+.dropdown-results {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #d76464;
+  border-radius: 0 0 8px 8px;
+  width: 400px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.search-result-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.search-result-item:hover {
+  background: #f3eee4;
+}

@@ -18,8 +18,9 @@
       <h2>- En markedsplads for køb og<br> salg af brugte universitets bøger</h2>
     </div>
 
-    <div class="search-wrapper">
-      <input type="text" placeholder="Søg efter bøger, ISBN, eller forfattere...">
+    <div class="search-wrapper" style="position: relative;">
+      <input id="search-input" type="text" placeholder="Søg efter bøger, ISBN, eller forfattere...">
+      <div id="search-results" class="dropdown-results"></div>
     </div>
 
     <!-- Top-right image -->
@@ -35,5 +36,55 @@
       <li><a href="/curriculum" class="{% if active_page == 'curriculum' %}active{% endif %}">Pensumliste</a></li>
     </ul>
   </nav>
+
+  <script>
+  const input = document.getElementById('search-input');
+  const resultsDiv = document.getElementById('search-results');
+
+  input.addEventListener('input', function() {
+      const query = input.value;
+      if (!query) {
+          resultsDiv.innerHTML = '';
+          return;
+      }
+      fetch(`/search_books?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+          resultsDiv.innerHTML = '';
+          if (data && data.docs && data.docs.length > 0) {
+            data.docs.slice(0, 10).forEach(book => {
+              const title = book.title || 'Ukendt titel';
+              const author = (book.author_name && book.author_name.join(', ')) || 'Ukendt forfatter';
+              // Try to get ISBN from the isbn field, or fallback to ia
+              let isbn = (book.isbn && book.isbn[0]) || null;
+              if (!isbn && book.ia && Array.isArray(book.ia)) {
+                // Try to find an ISBN-like string in the ia array
+                const iaIsbn = book.ia.find(str => str.startsWith('isbn_'));
+                if (iaIsbn) {
+                  isbn = iaIsbn.replace('isbn_', '');
+                }
+              }
+              isbn = isbn || 'Ukendt ISBN';
+              const item = document.createElement('div');
+              item.className = 'search-result-item';
+              item.innerHTML = `<strong>${title}</strong> af ${author} <br> ISBN: ${isbn}`;
+              item.addEventListener('click', () => {
+                alert(`Du har valgt: ${title} af ${author} (ISBN: ${isbn})`);
+                resultsDiv.innerHTML = '';
+                input.value = title;
+              });
+              resultsDiv.appendChild(item);
+            });
+          }
+        });
+  });
+
+  // Optional: Hide dropdown when clicking outside
+  document.addEventListener('click', function(event) {
+    if (!event.target.closest('.search-wrapper')) {
+      resultsDiv.innerHTML = '';
+    }
+  });
+  </script>
 </body>
 </html>
