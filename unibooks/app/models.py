@@ -1,6 +1,7 @@
 from .database import db
 from flask_login import UserMixin
 
+
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     isbn = db.Column(db.String(13), unique=True, nullable=False)
@@ -15,6 +16,7 @@ class Book(db.Model):
             "author": self.author,
         }
 
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
@@ -24,12 +26,14 @@ class User(UserMixin, db.Model):
 
     def set_password(self, password):
         from app import bcrypt
-        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+
+        self.password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
 
     def check_password(self, password):
         from app import bcrypt
+
         return bcrypt.check_password_hash(self.password_hash, password)
-    
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -38,12 +42,14 @@ class User(UserMixin, db.Model):
             "phone_number": self.phone_number,
         }
 
+
 class Sales_Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey("book.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.String(500), nullable=True)
+    image_filename = db.Column(db.String(100), nullable=True)
 
     user = db.relationship("User", backref="sales_listings", lazy=True)
     book = db.relationship("Book", backref="sales_listings", lazy=True)

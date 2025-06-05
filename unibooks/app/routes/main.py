@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 
 main_bp = Blueprint("main", __name__)
 
-UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'static', 'uploads')
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "..", "static", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
@@ -78,7 +78,7 @@ def profile():
             db.session.commit()
             flash("Adgangskode opdateret!", "success")
             return redirect(url_for("main.profile"))
-        
+
         if phone_number is not None:
             if phone_number != current_user.phone_number:
                 current_user.phone_number = phone_number
@@ -102,6 +102,7 @@ def create_listing():
         isbn = request.form.get("isbn") or request.form.get("search-input-isbn")
         price = request.form.get("price")
         description = request.form.get("description")
+        image = request.files.get("image")
         # Find or create the book
         book = Book.query.filter_by(isbn=isbn).first()
         if not book:
@@ -109,18 +110,26 @@ def create_listing():
             db.session.add(book)
             db.session.commit()
 
+        image_filename = None
+        if image and image.filename:
+            filename = secure_filename(image.filename)
+            image.save(os.path.join(UPLOAD_FOLDER, filename))
+            image_filename = filename
+
         # Create the sales listing (reference book by book_id)
         listing = Sales_Listing(
             book_id=book.id,
             user_id=current_user.id,
             price=price,
-            description=description
+            description=description,
+            image_filename=image_filename,
         )
         db.session.add(listing)
         db.session.commit()
         return redirect(url_for("main.index"))
 
     return render_template("sales_listing.html")
+
 
 @main_bp.route("/sales_listing/<int:listing_id>")
 @login_required

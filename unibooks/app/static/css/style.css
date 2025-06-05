@@ -816,6 +816,17 @@ nav ul li a.active {
   height: 100%;
   border-radius: 10px;
 }
+
+.book-listing-cover {
+  width: 250px;         /* or your preferred width */
+  height: 320px;        /* or your preferred height */
+  object-fit: cover;    /* ensures the image fills the box and is cropped if needed */
+  border-radius: 18px;  /* matches your card style */
+  display: block;
+  margin: 0 auto;
+  background: #f3f3f3;
+}
+
 .book-carousel-info {
   width: 100%;
   text-align: center;

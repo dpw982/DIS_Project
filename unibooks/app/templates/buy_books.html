@@ -63,7 +63,11 @@
     <tr>
       <td>
         <a href="{{ url_for('main.listing_detail', listing_id=sale.id) }}">
-          <img src="https://books.google.com/books/content?vid=ISBN{{ sale.book.isbn }}&printsec=frontcover&img=1&zoom=1&source=gbs_api" alt="Bogbillede" class="book-carousel-cover">
+            {% if sale.image_filename %}
+              <img src="{{ url_for('static', filename='uploads/' ~ sale.image_filename) }}" alt="Bogbillede" class="book-carousel-cover">
+            {% else %}
+              <img src="https://books.google.com/books/content?vid=ISBN{{ sale.book.isbn }}&printsec=frontcover&img=1&zoom=1&source=gbs_api" alt="Bogbillede" class="book-carousel-cover">
+            {% endif %}
         </a>
       </td>
       <td>
