@@ -5,7 +5,8 @@ How to run (Docker):
 2) Open a terminal and move to the root directory DIS_Project
     cd /path/to/DIS_Project
 
-3) Build and start the web-app with:
+3) Build and start the web-app with (There is a bug where the first time running this might cause an error
+    this is due to the db not being finalized, if running into this error - simply run the command again):
     docker-compose up --build
 
 4) Open your browser and go to:
