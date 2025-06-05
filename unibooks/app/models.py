@@ -1,4 +1,5 @@
 from .database import db
+from flask_login import UserMixin
 
 # Define models for the Database
 # These models represent the structure of the Database tables
@@ -19,34 +20,41 @@ class Book(db.Model):
         }
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
 
+    def set_password(self, password):
+        from app import bcrypt  # Import bcrypt here to avoid circular import issues
+        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        from app import bcrypt
+        return bcrypt.check_password_hash(self.password_hash, password)
+    
     def to_dict(self):
-        return {"id": self.id, "username": self.username, "email": self.email}
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+        }
 
-
-class University(db.Model):
+class Sales_Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), nullable=False)
-    studylines = db.relationship("Studyline", backref="university", lazy=True)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    book = db.relationship("Book", backref="sales_listings", lazy=True)
+    user = db.relationship("User", backref="sales_listings", lazy=True)
 
     def to_dict(self):
         return {
             "id": self.id,
-            "name": self.name,
+            "book_id": self.book_id,
+            "user_id": self.user_id,
+            "price": self.price,
+            "book": self.book.to_dict() if self.book else None,
+            "user": self.user.to_dict() if self.user else None,
         }
-
-
-class Studyline(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), nullable=False)
-    university_id = db.Column(
-        db.Integer, db.ForeignKey("university.id"), nullable=False
-    )
-
-    def to_dict(self):
-        return {"id": self.id, "name": self.name, "university_id": self.university_id}

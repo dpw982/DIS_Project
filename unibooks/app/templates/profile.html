@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Min profil - Unibooks</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div class="header-container">
+    <div class="title-group">
+      <h1>
+        <a href="{{ url_for('main.index') }}" style="color: inherit; text-decoration: none;">UniBooks</a>
+      </h1>
+      <h2>- En markedsplads for køb og<br> salg af brugte universitets bøger</h2>
+    </div>
+    <div class="header-container">
+      <div class="top-right-container">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="top-right-image">
+      </div>
+    </div>
+  </div>
+
+  <div class="form-container">
+    <div class="form-inner">
+      <h2>Min profil</h2>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="flashes">
+            {% for category, message in messages %}
+              <li class="flash-{{ category }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+
+      <!-- Brugernavn -->
+      <form method="post" action="{{ url_for('main.profile') }}">
+        <div class="edit-row">
+          <label for="username"><strong>Brugernavn:</strong></label>
+          <span>{{ user.username }}</span>
+          <button type="button" class="edit-btn" onclick="toggleEdit('username')">Ændr</button>
+          <input type="text" class="edit-input" id="username-input" name="username" value="{{ user.username }}" style="display:none;">
+          <button type="submit" class="save-btn" id="username-save" style="display:none;">Gem</button>
+        </div>
+      </form>
+
+      <!-- Email -->
+      <form method="post" action="{{ url_for('main.profile') }}">
+        <div class="edit-row">
+          <label for="email"><strong>Email:</strong></label>
+          <span>{{ user.email }}</span>
+          <button type="button" class="edit-btn" onclick="toggleEdit('email')">Ændr</button>
+          <input type="email" class="edit-input" id="email-input" name="email" value="{{ user.email }}" style="display:none;">
+          <button type="submit" class="save-btn" id="email-save" style="display:none;">Gem</button>
+        </div>
+      </form>
+
+      <!-- Password -->
+      <form method="post" action="{{ url_for('main.profile') }}">
+        <div class="edit-row">
+          <label for="password"><strong>Adgangskode:</strong></label>
+          <span>••••••••</span>
+          <button type="button" class="edit-btn" onclick="toggleEdit('password')">Ændr</button>
+          <input type="password" class="edit-input" id="password-input" name="password" placeholder="Ny adgangskode" style="display:none;">
+          <button type="submit" class="save-btn" id="password-save" style="display:none;">Gem</button>
+        </div>
+      </form>
+      <h3>Mine aktive opslag</h3>
+
+      <a href="{{ url_for('auth.logout') }}" class="logout-link">Log ud</a>
+    </div>
+    <!-- Move the table OUTSIDE form-inner but still inside form-container -->
+    <div style="width:100%; margin-top:32px;">
+      <h3>Mine aktive opslag</h3>
+      <table class="sales-table" style="margin-bottom:24px;">
+        <thead>
+          <tr>
+            <th>Billede</th>
+            <th>Titel</th>
+            <th>Forfatter</th>
+            <th>ISBN</th>
+            <th>Pris</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sale in user_sales %}
+          <tr>
+            <td>
+              {% if sale.image_filename %}
+                <img src="{{ url_for('static', filename='uploads/' ~ sale.image_filename) }}" alt="Bogbillede">
+              {% endif %}
+            </td>
+            <td>{{ sale.title }}</td>
+            <td>{{ sale.author }}</td>
+            <td>{{ sale.isbn }}</td>
+            <td>{{ sale.price }} kr.</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" class="sales-table-empty">Du har ingen aktive opslag.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function toggleEdit(field) {
+      document.getElementById(field + '-input').style.display = 'inline-block';
+      document.getElementById(field + '-save').style.display = 'inline-block';
+      // Hide the Ændr button
+      event.target.style.display = 'none';
+    }
+  </script>
+</body>
+</html>
