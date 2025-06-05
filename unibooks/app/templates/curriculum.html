@@ -62,6 +62,11 @@
               } else {
                 isbn = book.ia || '';
               }
+              if (isbn) {
+                isbn = isbn.replace(/isbn_/, "")
+              } else {
+                isbn = 'Ukendt ISBN';
+              }
               const item = document.createElement('div');
               item.className = 'search-result-item';
               item.innerHTML = `<strong>${title}</strong> af ${author} <br> ISBN: ${isbn}`;
