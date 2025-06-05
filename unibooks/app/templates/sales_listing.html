@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>Opret Salgsannonce</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div class="listing-form-container">
+    <h2>Opret Salgsannonce</h2>
+    <div class="cover-container">
+    <div id="cover-frame" class="cover-frame">
+        <span class="plus-sign">+</span>
+        <input type="file" id="cover-upload" name="cover" accept="image/*" style="display:none;">
+    </div>
+    <div class="cover-preview-wrapper" style ="display: none;">
+        <img id="cover-preview" src="" alt="Bogforside">
+        <button id="cover-edit" class="cover-edit" type="button" aria-label="Rediger billede">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="3" width="18" height="18" rx="3" fill="#fff" stroke="#888" stroke-width="2"/>
+            <path d="M8 16l8-8M15 7l2 2M7 17h2l8-8-2-2-8 8v2z" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        </button>
+    </div>
+    </div>
+    <form class="listing-form" method="POST" action="/create-listing">
+
+      <label for="title">Bogtitel</label>
+      <input id="search-input-title" type="text" placeholder="Søg efter bøger ved titel..." required>
+      <div id="search-results-title" class="dropdown-results"></div>
+
+      <label for="author">Forfatter</label>
+      <input id="search-input-author" type="text" placeholder="Søg efter bøger ved forfatter..." required>
+      <div id="search-results-author" class="dropdown-results"></div>
+
+      <label for="isbn">ISBN</label>
+      <input id="search-input-isbn" type="text" placeholder="Søg efter bøger ved ISBN..." required>
+      <div id="search-results-isbn" class="dropdown-results"></div>
+
+      <label for="price">Pris (DKK)</label>
+      <input type="number" id="price" name="price" min="0" step="1" required>
+
+      <label for="description">Beskrivelse</label>
+      <textarea id="description" name="description" placeholder="Evt. stand, noter, afhentning osv."></textarea>
+
+      <button type="submit">Opret annonce</button>
+    </form>
+  </div>
+  
+  <script>
+function setupSearch(inputId, resultsId, endpoint, getDisplay, onSelect) {
+  const input = document.getElementById(inputId);
+  const resultsDiv = document.getElementById(resultsId);
+
+  input.addEventListener('input', async function () {
+    const q = input.value.trim();
+    if (!q) {
+      resultsDiv.innerHTML = '';
+      resultsDiv.classList.remove('active');
+      return;
+    }
+    const res = await fetch(`${endpoint}?q=${encodeURIComponent(q)}`);
+    const { docs } = await res.json();
+    resultsDiv.innerHTML = '';
+    docs.forEach(item => {
+      const display = getDisplay(item);
+      if (!display) return;
+      const div = document.createElement('div');
+      div.className = 'search-result-item';
+      div.innerHTML = display;
+      div.addEventListener('click', () => {
+        input.value = display.replace(/<[^>]+>/g, '');
+        resultsDiv.innerHTML = '';
+        resultsDiv.classList.remove('active');
+        if (onSelect) onSelect(item);
+      });
+      resultsDiv.appendChild(div);
+    });
+    resultsDiv.classList.add('active');
+  });
+
+  document.addEventListener('click', function (event) {
+    if (!resultsDiv.contains(event.target) && event.target !== input) {
+      resultsDiv.innerHTML = '';
+      resultsDiv.classList.remove('active');
+    }
+  });
+}
+const coverFrame = document.getElementById('cover-frame');
+const coverUpload = document.getElementById('cover-upload');
+const coverPreview = document.getElementById('cover-preview');
+const coverEdit = document.getElementById('cover-edit');
+const coverPreviewWrapper = document.querySelector('.cover-preview-wrapper');
+let userCoverSelected = false;
+
+// Clicking the frame opens the file picker
+coverFrame.addEventListener('click', function() {
+  coverUpload.click();
+});
+
+// Clicking the edit icon also opens the file picker
+coverEdit.addEventListener('click', function() {
+  coverUpload.click();
+});
+
+// When a file is chosen, show it and show the edit icon
+coverUpload.addEventListener('change', function(event) {
+  const file = event.target.files[0];
+  if (file) {
+    coverPreview.src = URL.createObjectURL(file);
+    coverPreview.style.display = 'block';
+    coverPreviewWrapper.style.display = 'flex';
+    coverFrame.style.display = 'none';
+    userCoverSelected = true;
+  }
+});
+
+// Helper to show API cover only if user hasn't uploaded their own
+function showApiCover(url) {
+  if (!userCoverSelected) {
+    if (url) {
+      coverPreview.src = url;
+      coverPreview.style.display = 'block';
+      coverPreviewWrapper.style.display = 'flex';
+      coverFrame.style.display = 'none';
+    } else {
+      coverPreview.src = '';
+      coverPreview.style.display = 'none';
+      coverPreviewWrapper.style.display = 'none';
+      coverFrame.style.display = 'flex';
+    }
+  }
+}
+// Title search
+setupSearch(
+  'search-input-title',
+  'search-results-title',
+  '/search_titles',
+  book => {
+    const author = (book.author_name && book.author_name.join(', ')) || 'Ukendt forfatter';
+    const isbn = (book.isbn && book.isbn.length > 0) ? book.isbn.join(', ') : 'Ukendt ISBN';
+    return `<strong>${book.title || 'Ukendt titel'}</strong> af ${author} <span style="color: #888;">(ISBN: ${isbn})</span>`;
+  },
+  book => {
+    // Set only the title in the title input
+    const titleInput = document.getElementById('search-input-title');
+    if (titleInput && book.title) {
+      titleInput.value = book.title;
+    }
+    // Fill author field
+    const authorInput = document.getElementById('search-input-author');
+    if (authorInput && book.author_name && book.author_name.length > 0) {
+      authorInput.value = book.author_name.join(', ');
+    }
+    // Fill ISBN field
+    const isbnInput = document.getElementById('search-input-isbn');
+    if (isbnInput && book.isbn && book.isbn.length > 0) {
+      isbnInput.value = book.isbn[0];
+    }
+    showApiCover(book.cover_url);
+  }
+);
+
+// Author search
+setupSearch(
+  'search-input-author',
+  'search-results-author',
+  '/search_authors',
+  author => `<strong>${author.author_name || 'Ukendt forfatter'}</strong>`
+);
+
+// ISBN search
+setupSearch(
+  'search-input-isbn',
+  'search-results-isbn',
+  '/search_isbn',
+  book => {
+    if (!book.isbn || !Array.isArray(book.isbn) || book.isbn.length === 0) {
+      return null;
+    }
+    const foundIsbn = book.isbn.join(', ');
+    const author = (book.author_name && book.author_name.join(', ')) || 'Ukendt forfatter';
+    const coverPreview = document.getElementById('cover-preview');
+    showApiCover(book.cover_url);   
+    return `<strong>${book.title || 'Ukendt titel'}</strong> af ${author} (ISBN: ${foundIsbn})`;
+  },
+  book => {
+    // Fill ISBN field
+    const isbnInput = document.getElementById('search-input-isbn');
+    if (isbnInput && book.isbn && book.isbn.length > 0) {
+      isbnInput.value = book.isbn[0];
+    }
+    // Fill title field
+    const titleInput = document.getElementById('search-input-title');
+    if (titleInput && book.title) {
+      titleInput.value = book.title;
+    }
+    // Fill author field
+    const authorInput = document.getElementById('search-input-author');
+    if (authorInput && book.author_name && book.author_name.length > 0) {
+      authorInput.value = book.author_name.join(', ');
+    }
+  }
+);
+  </script>
+</body>
+</html>
