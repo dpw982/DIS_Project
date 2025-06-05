@@ -63,7 +63,9 @@
     <button class="book-carousel-btn" onclick="prevBookSlide()">&#8592;</button>
     <div class="book-carousel-track" id="book-carousel-track">
       {% for sale in sales_listings %}
-        <div class="book-carousel-card">
+        <div class="book-carousel-card"
+             style="cursor:pointer;"
+             onclick="window.location.href='{{ url_for('main.listing_detail', listing_id=sale.id) }}'">
           <div class="book-carousel-imgwrap">
             <img src="https://books.google.com/books/content?vid=ISBN{{ sale.book.isbn }}&printsec=frontcover&img=1&zoom=1&source=gbs_api" alt="Bogbillede" class="book-carousel-cover">
           </div>
@@ -79,56 +81,56 @@
     <button class="book-carousel-btn" onclick="nextBookSlide()">&#8594;</button>
   </div>
 
-<script>
-const input = document.getElementById('open-listings-search-input');
-const dropdown = document.getElementById('open-listings-suggestions');
+  <script>
+  const input = document.getElementById('open-listings-search-input');
+  const dropdown = document.getElementById('open-listings-suggestions');
 
-let debounceTimeout = null;
+  let debounceTimeout = null;
 
-input.addEventListener('input', function() {
-  const q = input.value.trim();
-  if (debounceTimeout) clearTimeout(debounceTimeout);
-  if (!q) {
-    dropdown.classList.remove('active');
-    dropdown.innerHTML = '';
-    return;
-  }
-  debounceTimeout = setTimeout(() => {
-    fetch(`/search_listings?q=${encodeURIComponent(q)}`)
-      .then(res => res.json())
-      .then(data => {
-        if (!data.docs || data.docs.length === 0) {
-          dropdown.classList.remove('active');
-          dropdown.innerHTML = '';
-          return;
-        }
-        dropdown.innerHTML = data.docs.slice(0, 8).map(sale => `
-          <div class="suggestion-item" data-id="${sale.id}">
-            <strong>${sale.title}</strong> af ${sale.author} <span style="color:#888;">(ISBN: ${sale.isbn})</span>
-          </div>
-        `).join('');
-        dropdown.classList.add('active');
-      });
-  }, 200); // debounce for 200ms
-});
+  input.addEventListener('input', function() {
+    const q = input.value.trim();
+    if (debounceTimeout) clearTimeout(debounceTimeout);
+    if (!q) {
+      dropdown.classList.remove('active');
+      dropdown.innerHTML = '';
+      return;
+    }
+    debounceTimeout = setTimeout(() => {
+      fetch(`/search_listings?q=${encodeURIComponent(q)}`)
+        .then(res => res.json())
+        .then data => {
+          if (!data.docs || data.docs.length === 0) {
+            dropdown.classList.remove('active');
+            dropdown.innerHTML = '';
+            return;
+          }
+          dropdown.innerHTML = data.docs.slice(0, 8).map(sale => `
+            <div class="suggestion-item" data-id="${sale.id}">
+              <strong>${sale.title}</strong> af ${sale.author} <span style="color:#888;">(ISBN: ${sale.isbn})</span>
+            </div>
+          `).join('');
+          dropdown.classList.add('active');
+        });
+    }, 200); // debounce for 200ms
+  });
 
-// Handle click on suggestion
-dropdown.addEventListener('click', function(e) {
-  const item = e.target.closest('.suggestion-item');
-  if (item) {
-    const id = item.getAttribute('data-id');
-    window.location.href = `/sales_listing/${id}`;
-  }
-});
+  // Handle click on suggestion
+  dropdown.addEventListener('click', function(e) {
+    const item = e.target.closest('.suggestion-item');
+    if (item) {
+      const id = item.getAttribute('data-id');
+      window.location.href = `/sales_listing/${id}`;
+    }
+  });
 
-// Hide dropdown when clicking outside
-document.addEventListener('click', function(e) {
-  if (!dropdown.contains(e.target) && e.target !== input) {
-    dropdown.classList.remove('active');
-    dropdown.innerHTML = '';
-  }
-});
-</script>
+  // Hide dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!dropdown.contains(e.target) && e.target !== input) {
+      dropdown.classList.remove('active');
+      dropdown.innerHTML = '';
+    }
+  });
+  </script>
 <script>
 const track = document.getElementById('book-carousel-track');
 const cards = Array.from(document.querySelectorAll('.book-carousel-card'));

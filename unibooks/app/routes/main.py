@@ -118,7 +118,6 @@ def create_listing():
         )
         db.session.add(listing)
         db.session.commit()
-        flash("Din bog er nu sat til salg!", "success")
         return redirect(url_for("main.index"))
 
     return render_template("sales_listing.html")

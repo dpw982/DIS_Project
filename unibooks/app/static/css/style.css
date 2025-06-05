@@ -778,8 +778,8 @@ nav ul li a.active {
   border-radius: 22px;
   box-shadow: 0 4px 16px 0 rgba(220, 140, 140, 0.10), 0 1px 4px 0 rgba(220, 140, 140, 0.08);
   flex-shrink: 0;
-  min-width: 200px;
-  max-width: 200px;
+  min-width: 180px;
+  max-width: 180px;
   min-height: 340px;
   display: flex;
   flex-direction: column;
@@ -793,7 +793,7 @@ nav ul li a.active {
   position: relative;
 }
 .book-carousel-card:hover {
-  transform: scale(1.025) translateY(-4px); /* Less pop-out */
+  transform: scale(1.0005) translateX(2px); /* Less pop-out */
   box-shadow: 0 8px 24px 0 rgba(220, 140, 140, 0.13), 0 2px 8px 0 rgba(220, 140, 140, 0.10);
   border-color: #e8a3a3;
 }
