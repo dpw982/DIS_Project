@@ -65,16 +65,12 @@
       {% for sale in sales_listings %}
         <div class="book-carousel-card">
           <div class="book-carousel-imgwrap">
-            {% if sale.image_filename %}
-              <img src="{{ url_for('static', filename='uploads/' ~ sale.image_filename) }}" alt="Bogbillede" class="book-carousel-cover">
-            {% else %}
-              <img src="https://books.google.com/books/content?vid=ISBN{{ sale.isbn }}&printsec=frontcover&img=1&zoom=1&source=gbs_api" alt="Bogbillede" class="book-carousel-cover">
-            {% endif %}
+            <img src="https://books.google.com/books/content?vid=ISBN{{ sale.book.isbn }}&printsec=frontcover&img=1&zoom=1&source=gbs_api" alt="Bogbillede" class="book-carousel-cover">
           </div>
           <div class="book-carousel-info">
-            <div class="book-carousel-title">{{ sale.title }}</div>
-            <div class="book-carousel-author">{{ sale.author }}</div>
-            <div class="book-carousel-isbn">ISBN: {{ sale.isbn }}</div>
+            <div class="book-carousel-title">{{ sale.book.title }}</div>
+            <div class="book-carousel-author">{{ sale.book.author }}</div>
+            <div class="book-carousel-isbn">ISBN: {{ sale.book.isbn }}</div>
             <div class="book-carousel-price">{{ sale.price }} kr.</div>
           </div>
         </div>

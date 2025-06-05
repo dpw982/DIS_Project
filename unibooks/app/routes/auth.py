@@ -23,7 +23,7 @@ def signup():
     user.set_password(password)
     db.session.add(user)
     db.session.commit()
-    return render_template('signup.html')
+    return redirect(url_for('auth.login'))
   return render_template('signup.html')
   
 @auth_bp.route('/login', methods=['GET', 'POST'])

@@ -37,21 +37,15 @@
   </div>
 
   <div class="listing-detail-container">
-    <div class="listing-detail-header">
-      {% if sale.image_filename %}
-        <img class="listing-detail-img" src="{{ url_for('static', filename='uploads/' ~ sale.image_filename) }}" alt="Bogbillede">
-      {% else %}
-        <div class="listing-detail-img" style="display:flex;align-items:center;justify-content:center;color:#bbb;">Ingen billede</div>
-      {% endif %}
       <div>
-        <h2 class="listing-detail-title">{{ sale.title }}</h2>
-        <div style="color:#888;font-size:1.1rem;">af {{ sale.author }}</div>
+        <h2 class="listing-detail-title">{{ sale.book.title }}</h2>
+        <div style="color:#888;font-size:1.1rem;">af {{ sale.book.author }}</div>
       </div>
     </div>
     <table class="listing-detail-table">
       <tr>
         <td class="listing-detail-label">ISBN:</td>
-        <td>{{ sale.isbn }}</td>
+        <td>{{ sale.book.isbn }}</td>
       </tr>
       <tr>
         <td class="listing-detail-label">Pris:</td>

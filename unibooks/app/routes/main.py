@@ -102,29 +102,18 @@ def create_listing():
         isbn = request.form.get("isbn") or request.form.get("search-input-isbn")
         price = request.form.get("price")
         description = request.form.get("description")
-        image = request.files.get("image")
-
-        image_filename = None
-        if image and image.filename:
-            filename = secure_filename(image.filename)
-            image.save(os.path.join(UPLOAD_FOLDER, filename))
-            image_filename = filename
-
-        # Optionally create the book (if you want to keep a Book table)
+        # Find or create the book
         book = Book.query.filter_by(isbn=isbn).first()
         if not book:
             book = Book(isbn=isbn, title=title, author=author)
             db.session.add(book)
             db.session.commit()
 
-        # Create the sales listing
+        # Create the sales listing (reference book by book_id)
         listing = Sales_Listing(
-            isbn=isbn,
-            title=title,
-            author=author,
+            book_id=book.id,
             user_id=current_user.id,
             price=price,
-            image_filename=image_filename,
             description=description
         )
         db.session.add(listing)

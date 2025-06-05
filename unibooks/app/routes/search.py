@@ -117,17 +117,16 @@ def search_open_listings():
     results = []
     for sale in all_listings:
         if (
-            pattern.search(sale.title or "")
-            or pattern.search(sale.isbn or "")
-            or pattern.search(sale.author or "")
+            pattern.search(sale.book.title or "")
+            or pattern.search(sale.book.isbn or "")
+            or pattern.search(sale.book.author or "")
         ):
             results.append({
                 "id": sale.id,
-                "title": sale.title,
-                "author": sale.author,
-                "isbn": sale.isbn,
+                "title": sale.book.title,
+                "author": sale.book.author,
+                "isbn": sale.book.isbn,
                 "price": sale.price,
-                "image_filename": sale.image_filename,
                 "description": sale.description,
             })
     return jsonify({"docs": results})
