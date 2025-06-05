@@ -55,16 +55,13 @@
             data.docs.slice(0, 10).forEach(book => {
               const title = book.title || 'Ukendt titel';
               const author = (book.author_name && book.author_name.join(', ')) || 'Ukendt forfatter';
-              // Try to get ISBN from the isbn field, or fallback to ia
-              let isbn = (book.isbn && book.isbn[0]) || null;
-              if (!isbn && book.ia && Array.isArray(book.ia)) {
-                // Try to find an ISBN-like string in the ia array
-                const iaIsbn = book.ia.find(str => str.startsWith('isbn_'));
-                if (iaIsbn) {
-                  isbn = iaIsbn.replace('isbn_', '');
-                }
+              let isbn = '';
+              if (Array.isArray(book.ia)) {
+                const regex = /isbn_[0-9]*/;
+                isbn = book.ia.find(iaItem => regex.test(iaItem));
+              } else {
+                isbn = book.ia || '';
               }
-              isbn = isbn || 'Ukendt ISBN';
               const item = document.createElement('div');
               item.className = 'search-result-item';
               item.innerHTML = `<strong>${title}</strong> af ${author} <br> ISBN: ${isbn}`;
