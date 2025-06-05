@@ -1,27 +1,23 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from app.models import db, User, Sales_Listing
+from app.models import db, User, Sales_Listing, Book
 import os
 from werkzeug.utils import secure_filename
-
-UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'uploads')
-UPLOAD_FOLDER = os.path.abspath(UPLOAD_FOLDER)
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
-
-def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Renders html pages at a given route
 
 
 main_bp = Blueprint("main", __name__)
 
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'static', 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 
 # Index / home page
 @main_bp.route("/")
 def index():
-    return render_template("index.html")
+    sales_listings = Sales_Listing.query.all()
+    return render_template("index.html", sales_listings=sales_listings)
 
 
 # Curriculum page
@@ -101,35 +97,40 @@ def profile():
 @login_required
 def create_listing():
     if request.method == "POST":
-        isbn = request.form.get("isbn")
+        title = request.form.get("title") or request.form.get("search-input-title")
+        author = request.form.get("author") or request.form.get("search-input-author")
+        isbn = request.form.get("isbn") or request.form.get("search-input-isbn")
         price = request.form.get("price")
         description = request.form.get("description")
-        title = request.form.get("title")
-        author = request.form.get("author")
         image = request.files.get("image")
 
         image_filename = None
-        if image and allowed_file(image.filename):
+        if image and image.filename:
             filename = secure_filename(image.filename)
-            full_path = os.path.join(UPLOAD_FOLDER, filename)
-            print("Saving image to:", full_path)  # Debug print
-            image.save(full_path)
+            image.save(os.path.join(UPLOAD_FOLDER, filename))
             image_filename = filename
-        else:
-            print("No image or not allowed file:", image)
 
-        new_listing = Sales_Listing(
+        # Optionally create the book (if you want to keep a Book table)
+        book = Book.query.filter_by(isbn=isbn).first()
+        if not book:
+            book = Book(isbn=isbn, title=title, author=author)
+            db.session.add(book)
+            db.session.commit()
+
+        # Create the sales listing
+        listing = Sales_Listing(
             isbn=isbn,
-            user_id=current_user.id,
             title=title,
             author=author,
+            user_id=current_user.id,
             price=price,
             image_filename=image_filename,
             description=description
         )
-        db.session.add(new_listing)
+        db.session.add(listing)
         db.session.commit()
-        return redirect(url_for("main.profile"))
+        flash("Din bog er nu sat til salg!", "success")
+        return redirect(url_for("main.index"))
 
     return render_template("sales_listing.html")
 

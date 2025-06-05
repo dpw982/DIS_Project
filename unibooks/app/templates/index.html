@@ -49,78 +49,144 @@
   <!-- Navbar -->
   <nav>
     <ul>
-      <li><a href="/" class="{% if active_page == 'signup' %}active{% endif %}">Sælg bog</a></li>
-      <li><a href="{{ url_for('main.buy_books') }}" class="{% if active_page == 'buy_books' %}active{% endif %}">Køb bog</a></li>
+      <li>
+        <a href="{{ url_for('main.create_listing') }}" class="{% if active_page == 'sell' %}active{% endif %}">Sælg bog</a>
+      </li>
+      <li>
+        <a href="{{ url_for('main.buy_books') }}" class="{% if active_page == 'buy_books' %}active{% endif %}">Køb bog</a>
+      </li>
     </ul>
   </nav>
 
-  <!-- Carousel of active sales listings -->
-  <div class="carousel-slide" id="carousel-slide">
-    {% for sale in sales_listings %}
-      <div class="carousel-item">
-        {% if sale.image_filename %}
-          <img src="{{ url_for('static', filename='uploads/' ~ sale.image_filename) }}" alt="Bogbillede" style="max-width:100px; max-height:100px; margin-bottom:8px;">
-        {% endif %}
-        <strong>{{ sale.title }}</strong><br>
-        {{ sale.author }}<br>
-        ISBN: {{ sale.isbn }}<br>
-        Pris: {{ sale.price }} kr.
-      </div>
-    {% endfor %}
+  <!-- Only keep the new book carousel below -->
+  <div class="book-carousel-container">
+    <button class="book-carousel-btn" onclick="prevBookSlide()">&#8592;</button>
+    <div class="book-carousel-track" id="book-carousel-track">
+      {% for sale in sales_listings %}
+        <div class="book-carousel-card">
+          <div class="book-carousel-imgwrap">
+            {% if sale.image_filename %}
+              <img src="{{ url_for('static', filename='uploads/' ~ sale.image_filename) }}" alt="Bogbillede" class="book-carousel-cover">
+            {% else %}
+              <img src="https://books.google.com/books/content?vid=ISBN{{ sale.isbn }}&printsec=frontcover&img=1&zoom=1&source=gbs_api" alt="Bogbillede" class="book-carousel-cover">
+            {% endif %}
+          </div>
+          <div class="book-carousel-info">
+            <div class="book-carousel-title">{{ sale.title }}</div>
+            <div class="book-carousel-author">{{ sale.author }}</div>
+            <div class="book-carousel-isbn">ISBN: {{ sale.isbn }}</div>
+            <div class="book-carousel-price">{{ sale.price }} kr.</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <button class="book-carousel-btn" onclick="nextBookSlide()">&#8594;</button>
   </div>
 
-  <script>
-  const input = document.getElementById('open-listings-search-input');
-  const dropdown = document.getElementById('open-listings-suggestions');
+<script>
+const input = document.getElementById('open-listings-search-input');
+const dropdown = document.getElementById('open-listings-suggestions');
 
-  let debounceTimeout = null;
+let debounceTimeout = null;
 
-  input.addEventListener('input', function() {
-    const q = input.value.trim();
-    if (debounceTimeout) clearTimeout(debounceTimeout);
-    if (!q) {
-      dropdown.classList.remove('active');
-      dropdown.innerHTML = '';
-      return;
-    }
-    debounceTimeout = setTimeout(() => {
-      fetch(`/search_listings?q=${encodeURIComponent(q)}`)
-        .then(res => res.json())
-        .then(data => {
-          if (!data.docs || data.docs.length === 0) {
-            dropdown.classList.remove('active');
-            dropdown.innerHTML = '';
-            return;
-          }
-          dropdown.innerHTML = data.docs.slice(0, 8).map(sale => `
-            <div class="suggestion-item" data-id="${sale.id}">
-              <strong>${sale.title}</strong> af ${sale.author} <span style="color:#888;">(ISBN: ${sale.isbn})</span>
-            </div>
-          `).join('');
-          dropdown.classList.add('active');
-        });
-    }, 200); // debounce for 200ms
-  });
+input.addEventListener('input', function() {
+  const q = input.value.trim();
+  if (debounceTimeout) clearTimeout(debounceTimeout);
+  if (!q) {
+    dropdown.classList.remove('active');
+    dropdown.innerHTML = '';
+    return;
+  }
+  debounceTimeout = setTimeout(() => {
+    fetch(`/search_listings?q=${encodeURIComponent(q)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!data.docs || data.docs.length === 0) {
+          dropdown.classList.remove('active');
+          dropdown.innerHTML = '';
+          return;
+        }
+        dropdown.innerHTML = data.docs.slice(0, 8).map(sale => `
+          <div class="suggestion-item" data-id="${sale.id}">
+            <strong>${sale.title}</strong> af ${sale.author} <span style="color:#888;">(ISBN: ${sale.isbn})</span>
+          </div>
+        `).join('');
+        dropdown.classList.add('active');
+      });
+  }, 200); // debounce for 200ms
+});
 
-  // Handle click on suggestion
-  dropdown.addEventListener('click', function(e) {
-    const item = e.target.closest('.suggestion-item');
-    if (item) {
-      const id = item.getAttribute('data-id');
-      window.location.href = `/sales_listing/${id}`;
-    }
-  });
+// Handle click on suggestion
+dropdown.addEventListener('click', function(e) {
+  const item = e.target.closest('.suggestion-item');
+  if (item) {
+    const id = item.getAttribute('data-id');
+    window.location.href = `/sales_listing/${id}`;
+  }
+});
 
-  // Hide dropdown when clicking outside
-  document.addEventListener('click', function(e) {
-    if (!dropdown.contains(e.target) && e.target !== input) {
-      dropdown.classList.remove('active');
-      dropdown.innerHTML = '';
-    }
-  });
-  </script>
-  <div class="create-listing-btn-container">
-  <a href="/create-listing" class="create-listing-btn">Opret salgsannonce</a>
-</div>
+// Hide dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  if (!dropdown.contains(e.target) && e.target !== input) {
+    dropdown.classList.remove('active');
+    dropdown.innerHTML = '';
+  }
+});
+</script>
+<script>
+const track = document.getElementById('book-carousel-track');
+const cards = Array.from(document.querySelectorAll('.book-carousel-card'));
+const itemsPerView = 4; // Adjust as needed
+let currentIndex = 0;
+
+let cardWidth = cards[0].offsetWidth + 32; // 32px gap
+
+function showBookSlide(index) {
+  track.scrollTo({ left: index * cardWidth, behavior: 'smooth' });
+}
+
+function prevBookSlide() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    showBookSlide(currentIndex);
+  }
+}
+
+function nextBookSlide() {
+  if (currentIndex < cards.length - itemsPerView) {
+    currentIndex++;
+    showBookSlide(currentIndex);
+  }
+}
+
+showBookSlide(currentIndex);
+</script>
+<script>
+let isDown = false;
+let startX;
+let scrollLeft;
+
+track.addEventListener('mousedown', (e) => {
+  isDown = true;
+  track.classList.add('active');
+  startX = e.pageX - track.offsetLeft;
+  scrollLeft = track.scrollLeft;
+});
+track.addEventListener('mouseleave', () => {
+  isDown = false;
+  track.classList.remove('active');
+});
+track.addEventListener('mouseup', () => {
+  isDown = false;
+  track.classList.remove('active');
+});
+track.addEventListener('mousemove', (e) => {
+  if (!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - track.offsetLeft;
+  const walk = (x - startX) * 1.5; // scroll-fast
+  track.scrollLeft = scrollLeft - walk;
+});
+</script>
 </body>
 </html>

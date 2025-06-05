@@ -46,8 +46,8 @@ class User(UserMixin, db.Model):
 class Sales_Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     isbn = db.Column(db.String(13), nullable=False)
-    title = db.Column(db.String(200), nullable=False)      # Add this line
-    author = db.Column(db.String(200), nullable=True)      # Add this line
+    title = db.Column(db.String(200), nullable=False)
+    author = db.Column(db.String(200), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     price = db.Column(db.Float, nullable=False)
     image_filename = db.Column(db.String(255), nullable=True)
@@ -58,8 +58,8 @@ class Sales_Listing(db.Model):
         return {
             "id": self.id,
             "isbn": self.isbn,
-            "title": self.title,           # Add this line
-            "author": self.author,         # Add this line
+            "title": self.title,
+            "author": self.author,
             "user_id": self.user_id,
             "price": self.price,
             "image_filename": self.image_filename,

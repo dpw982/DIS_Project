@@ -40,8 +40,12 @@
   <!-- Navbar -->
   <nav>
     <ul>
-      <li><a href="/" class="{% if active_page == 'signup' %}active{% endif %}">Sælg bog</a></li>
-      <li><a href="{{ url_for('main.buy_books') }}" class="{% if active_page == 'buy_books' %}active{% endif %}">Køb bog</a></li>
+      <li>
+        <a href="{{ url_for('main.create_listing') }}" class="{% if active_page == 'sell' %}active{% endif %}">Sælg bog</a>
+      </li>
+      <li>
+        <a href="{{ url_for('main.buy_books') }}" class="{% if active_page == 'buy_books' %}active{% endif %}">Køb bog</a>
+      </li>
     </ul>
   </nav>
 <table class="sales-table">
