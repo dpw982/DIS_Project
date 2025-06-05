@@ -9,7 +9,6 @@
 </head>
 <body>
 
-  <!-- Header with title and centered search -->
   <div class="header-container">
     <div class="title-group">
       <h1>
@@ -46,7 +45,6 @@
   </div>
 
 
-  <!-- Navbar -->
   <nav>
     <ul>
       <li>
@@ -58,7 +56,6 @@
     </ul>
   </nav>
 
-  <!-- Only keep the new book carousel below -->
   <div class="book-carousel-container">
     <button class="book-carousel-btn" onclick="prevBookSlide()">&#8592;</button>
     <div class="book-carousel-track" id="book-carousel-track">
@@ -102,23 +99,22 @@
     debounceTimeout = setTimeout(() => {
       fetch(`/search_listings?q=${encodeURIComponent(q)}`)
         .then(res => res.json())
-        .then data => {
-          if (!data.docs || data.docs.length === 0) {
+        .then(data => {
+          if (!data.docs || data.docs.length == 0) {
             dropdown.classList.remove('active');
             dropdown.innerHTML = '';
             return;
           }
           dropdown.innerHTML = data.docs.slice(0, 8).map(sale => `
             <div class="suggestion-item" data-id="${sale.id}">
-              <strong>${sale.title}</strong> af ${sale.author} <span style="color:#888;">(ISBN: ${sale.isbn})</span>
+              <strong>${sale.book.title}</strong> af ${sale.book.author} <span style="color:#888;">(ISBN: ${sale.book.isbn})</span>
             </div>
           `).join('');
           dropdown.classList.add('active');
         });
-    }, 200); // debounce for 200ms
+    }, 200);
   });
 
-  // Handle click on suggestion
   dropdown.addEventListener('click', function(e) {
     const item = e.target.closest('.suggestion-item');
     if (item) {
@@ -127,7 +123,6 @@
     }
   });
 
-  // Hide dropdown when clicking outside
   document.addEventListener('click', function(e) {
     if (!dropdown.contains(e.target) && e.target !== input) {
       dropdown.classList.remove('active');
@@ -138,10 +133,10 @@
 <script>
 const track = document.getElementById('book-carousel-track');
 const cards = Array.from(document.querySelectorAll('.book-carousel-card'));
-const itemsPerView = 4; // Adjust as needed
+const itemsPerView = 4;
 let currentIndex = 0;
 
-let cardWidth = cards[0].offsetWidth + 32; // 32px gap
+let cardWidth = cards[0].offsetWidth + 32;
 
 function showBookSlide(index) {
   track.scrollTo({ left: index * cardWidth, behavior: 'smooth' });
@@ -186,7 +181,7 @@ track.addEventListener('mousemove', (e) => {
   if (!isDown) return;
   e.preventDefault();
   const x = e.pageX - track.offsetLeft;
-  const walk = (x - startX) * 1.5; // scroll-fast
+  const walk = (x - startX) * 1.5;
   track.scrollLeft = scrollLeft - walk;
 });
 </script>

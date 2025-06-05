@@ -73,11 +73,10 @@ def search_isbn():
     if not query:
         return jsonify({"error": "Missing query"}), 400
 
-    # If the query is all digits and 10 or 13 chars, use isbn: for exact match
     if query.isdigit() and len(query) in (10, 13):
         q_param = f"isbn:{query}"
     else:
-        q_param = query  # general search for partial ISBN
+        q_param = query
 
     url = "https://www.googleapis.com/books/v1/volumes"
     params = {
@@ -106,6 +105,7 @@ def search_isbn():
         )
     return jsonify({"docs": results})
 
+
 @search_bp.route("/search_listings")
 def search_open_listings():
     query = request.args.get("q")
@@ -121,12 +121,16 @@ def search_open_listings():
             or pattern.search(sale.book.isbn or "")
             or pattern.search(sale.book.author or "")
         ):
-            results.append({
-                "id": sale.id,
-                "title": sale.book.title,
-                "author": sale.book.author,
-                "isbn": sale.book.isbn,
-                "price": sale.price,
-                "description": sale.description,
-            })
+            results.append(
+                {
+                    "id": sale.id,
+                    "book": {
+                        "title": sale.book.title,
+                        "author": sale.book.author,
+                        "isbn": sale.book.isbn,
+                    },
+                    "price": sale.price,
+                    "description": sale.description,
+                }
+            )
     return jsonify({"docs": results})

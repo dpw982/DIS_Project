@@ -29,7 +29,6 @@ h2 {
   font-size: 15px;
 }
 
-/* Centered search bar */
 .search-wrapper {
   display: flex;
   justify-content: center;
@@ -69,7 +68,6 @@ h2 {
   display: inline-block;
 }
 
-/* Navbar */
 nav {
   background-color: #d76464;
 }
@@ -129,7 +127,6 @@ nav ul li a.active {
   background: #f3eee4;
 }
 
-/* Profile icon styling */
 .profile-icon {
   width: 40px;
   height: 40px;
@@ -291,7 +288,6 @@ nav ul li a.active {
   outline: none;
 }
 
-/* --- SALES TABLE --- */
 .sales-table {
   width: 100%;
   border-collapse: collapse;
@@ -319,7 +315,6 @@ nav ul li a.active {
   max-height: 60px;
 }
 
-/* --- CAROUSEL --- */
 .carousel-container {
   display: flex;
   align-items: center;
@@ -331,17 +326,17 @@ nav ul li a.active {
 .carousel-btn {
   position: relative;
   z-index: 3;
-  background: none;         /* No background */
+  background: none;
   color: #b85c5c;
   border: none;
   border-radius: 50%;
   width: 48px;
   height: 48px;
-  font-size: 38px;          /* Thicker/larger arrow */
-  font-weight: bold;        /* Thicker arrow */
+  font-size: 38px;
+  font-weight: bold;
   cursor: pointer;
   margin: 0 18px;
-  box-shadow: none;         /* Remove shadow */
+  box-shadow: none;
   transition: color 0.2s, transform 0.2s;
   display: flex;
   align-items: center;
@@ -389,7 +384,7 @@ nav ul li a.active {
 
 .carousel-cover-wrapper {
   width: 100%;
-  height: 260px; /* or 280px for even bigger */
+  height: 260px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -407,7 +402,6 @@ nav ul li a.active {
   display: block;
 }
 
-/* --- PROFILE PAGE EDIT FIELDS/BUTTONS --- */
 .edit-row {
   display: flex;
   align-items: center;
@@ -487,16 +481,19 @@ nav ul li a.active {
   box-shadow: 0 4px 18px rgba(229, 115, 115, 0.08);
   font-family: 'Poppins', sans-serif;
 }
+
 .listing-form-container h2 {
   text-align: center;
   margin-bottom: 1.5rem;
   color: #e57373;
 }
+
 .listing-form label {
   display: block;
   margin-bottom: 0.3rem;
   font-weight: 500;
 }
+
 .listing-form input, .listing-form textarea {
   width: 100%;
   padding: 0.7rem;
@@ -506,10 +503,12 @@ nav ul li a.active {
   font-size: 1rem;
   font-family: inherit;
 }
+
 .listing-form textarea {
   min-height: 80px;
   resize: vertical;
 }
+
 .listing-form button {
   width: 100%;
   background: #e57373;
@@ -522,10 +521,12 @@ nav ul li a.active {
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
 }
+
 .listing-form button:hover {
   background: #d32f2f;
   transform: translateY(-2px) scale(1.03);
 }
+
 .cover-container {
   width: 100%;
   display: flex;
@@ -592,7 +593,6 @@ nav ul li a.active {
   display: block;
 }
 
-/* --- Listing Detail Styles --- */
 .listing-detail-container {
   max-width: 600px;
   margin: 40px auto;
@@ -602,12 +602,14 @@ nav ul li a.active {
   padding: 32px 32px 24px 32px;
   font-family: 'Poppins', sans-serif;
 }
+
 .listing-detail-header {
   display: flex;
   align-items: center;
   gap: 24px;
   margin-bottom: 24px;
 }
+
 .listing-detail-img {
   width: 120px;
   height: 160px;
@@ -616,13 +618,13 @@ nav ul li a.active {
   border: 1px solid #eee;
   background: #fafafa;
 }
+
 .listing-detail-title {
   font-size: 2rem;
   margin: 0;
   font-weight: 600;
 }
 
-/* Listing detail table: make data column wider and prevent line breaks */
 .listing-detail-table {
   width: 100%;
   border-collapse: collapse;
@@ -652,7 +654,6 @@ nav ul li a.active {
   padding-left: 80px;
 }
 
-/* Add this to static/css/style.css */
 .sales-table a {
   color: inherit;
   text-decoration: none;
@@ -660,14 +661,13 @@ nav ul li a.active {
 
 .sales-table a:hover {
   text-decoration: underline;
-  color: #d32f2f; /* Or your preferred theme color */
+  color: #d32f2f;
 }
 
 .back-link, .seller-email {
   color: #d32f2f;
 }
 
-/* --- SUGGESTION DROPDOWN (LIVE SEARCH) --- */
 .suggestion-dropdown {
   position: absolute;
   top: 100%;
@@ -682,23 +682,26 @@ nav ul li a.active {
   overflow-y: auto;
   display: none;
 }
+
 .suggestion-dropdown.active {
   display: block;
 }
+
 .suggestion-item {
   padding: 12px 16px;
   cursor: pointer;
   border-bottom: 1px solid #f3f3f3;
   transition: background 0.15s;
 }
+
 .suggestion-item:last-child {
   border-bottom: none;
 }
+
 .suggestion-item:hover {
   background: #f3eee4;
 }
 
-/* --- BOOK CAROUSEL --- */
 .book-carousel-container {
   width: 100%;
   max-width: 1100px;
@@ -737,17 +740,17 @@ nav ul li a.active {
 .book-carousel-btn {
   position: relative;
   z-index: 3;
-  background: none;         /* No background */
+  background: none;
   color: #b85c5c;
   border: none;
   border-radius: 50%;
   width: 48px;
   height: 48px;
-  font-size: 38px;          /* Thicker/larger arrow */
-  font-weight: bold;        /* Thicker arrow */
+  font-size: 38px;
+  font-weight: bold;
   cursor: pointer;
   margin: 0 18px;
-  box-shadow: none;         /* Remove shadow */
+  box-shadow: none;
   transition: color 0.2s, transform 0.2s;
   display: flex;
   align-items: center;
@@ -763,8 +766,8 @@ nav ul li a.active {
 .book-carousel-track {
   display: flex;
   overflow: hidden;
-  width: 80vw;         /* Responsive width, not tied to card size */
-  max-width: 1000px;   /* Or any value you want */
+  width: 80vw;
+  max-width: 1000px;
   gap: 32px;
   scroll-behavior: smooth;
   position: relative;
@@ -792,11 +795,13 @@ nav ul li a.active {
   border: 1.5px solid #f5d1d1;
   position: relative;
 }
+
 .book-carousel-card:hover {
   transform: scale(1.0005) translateX(2px); /* Less pop-out */
   box-shadow: 0 8px 24px 0 rgba(220, 140, 140, 0.13), 0 2px 8px 0 rgba(220, 140, 140, 0.10);
   border-color: #e8a3a3;
 }
+
 .book-carousel-card.fade {
   opacity: 0.3;
   transition: opacity 0.3s;
@@ -818,10 +823,10 @@ nav ul li a.active {
 }
 
 .book-listing-cover {
-  width: 250px;         /* or your preferred width */
-  height: 320px;        /* or your preferred height */
-  object-fit: cover;    /* ensures the image fills the box and is cropped if needed */
-  border-radius: 18px;  /* matches your card style */
+  width: 250px;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 18px; 
   display: block;
   margin: 0 auto;
   background: #f3f3f3;

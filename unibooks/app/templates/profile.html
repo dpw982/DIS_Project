@@ -35,7 +35,6 @@
         {% endif %}
       {% endwith %}
 
-      <!-- Brugernavn -->
       <form method="post" action="{{ url_for('main.profile') }}">
         <div class="edit-row">
           <label for="username"><strong>Brugernavn:</strong></label>
@@ -46,7 +45,6 @@
         </div>
       </form>
 
-      <!-- Email -->
       <form method="post" action="{{ url_for('main.profile') }}">
         <div class="edit-row">
           <label for="email"><strong>Email:</strong></label>
@@ -57,7 +55,6 @@
         </div>
       </form>
 
-      <!-- Password -->
       <form method="post" action="{{ url_for('main.profile') }}">
         <div class="edit-row">
           <label for="password"><strong>Adgangskode:</strong></label>
@@ -80,7 +77,6 @@
 
       <a href="{{ url_for('auth.logout') }}" class="logout-link">Log ud</a>
     </div>
-    <!-- Move the table OUTSIDE form-inner but still inside form-container -->
     <div style="width:100%; margin-top:32px;">
       <h3>Mine aktive opslag</h3>
       <table class="sales-table" style="margin-bottom:24px;">
@@ -122,7 +118,6 @@
     function toggleEdit(field) {
       document.getElementById(field + '-input').style.display = 'inline-block';
       document.getElementById(field + '-save').style.display = 'inline-block';
-      // Hide the Ændr button
       event.target.style.display = 'none';
     }
   </script>

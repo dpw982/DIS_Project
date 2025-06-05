@@ -13,17 +13,10 @@ UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "..", "static", "uploads
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
-# Index / home page
 @main_bp.route("/")
 def index():
     sales_listings = Sales_Listing.query.all()
     return render_template("index.html", sales_listings=sales_listings)
-
-
-# Curriculum page
-@main_bp.route("/curriculum")
-def curriculum():
-    return render_template("curriculum.html", active_page="curriculum")
 
 
 @main_bp.route("/buy_books")
@@ -103,7 +96,6 @@ def create_listing():
         price = request.form.get("price")
         description = request.form.get("description")
         image = request.files.get("image")
-        # Find or create the book
         book = Book.query.filter_by(isbn=isbn).first()
         if not book:
             book = Book(isbn=isbn, title=title, author=author)
@@ -116,7 +108,6 @@ def create_listing():
             image.save(os.path.join(UPLOAD_FOLDER, filename))
             image_filename = filename
 
-        # Create the sales listing (reference book by book_id)
         listing = Sales_Listing(
             book_id=book.id,
             user_id=current_user.id,
