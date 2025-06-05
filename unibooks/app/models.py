@@ -43,18 +43,24 @@ class User(UserMixin, db.Model):
 
 class Sales_Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
+    isbn = db.Column(db.String(13), nullable=False)
+    title = db.Column(db.String(200), nullable=False)      # Add this line
+    author = db.Column(db.String(200), nullable=True)      # Add this line
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     price = db.Column(db.Float, nullable=False)
-    book = db.relationship("Book", backref="sales_listings", lazy=True)
+    image_filename = db.Column(db.String(255), nullable=True)
+    description = db.Column(db.String(500), nullable=True)
     user = db.relationship("User", backref="sales_listings", lazy=True)
 
     def to_dict(self):
         return {
             "id": self.id,
-            "book_id": self.book_id,
+            "isbn": self.isbn,
+            "title": self.title,           # Add this line
+            "author": self.author,         # Add this line
             "user_id": self.user_id,
             "price": self.price,
-            "book": self.book.to_dict() if self.book else None,
+            "image_filename": self.image_filename,
             "user": self.user.to_dict() if self.user else None,
+            "description": self.description,
         }

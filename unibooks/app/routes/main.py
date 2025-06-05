@@ -1,6 +1,16 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app.models import db, User, Sales_Listing
+import os
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'uploads')
+UPLOAD_FOLDER = os.path.abspath(UPLOAD_FOLDER)
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Renders html pages at a given route
 
@@ -80,8 +90,37 @@ def profile():
 
 
 @main_bp.route("/create-listing", methods=["GET", "POST"])
+@login_required
 def create_listing():
     if request.method == "POST":
-        # handle form submission here
-        pass
+        isbn = request.form.get("isbn")
+        price = request.form.get("price")
+        description = request.form.get("description")
+        title = request.form.get("title")
+        author = request.form.get("author")
+        image = request.files.get("image")
+
+        image_filename = None
+        if image and allowed_file(image.filename):
+            filename = secure_filename(image.filename)
+            full_path = os.path.join(UPLOAD_FOLDER, filename)
+            print("Saving image to:", full_path)  # Debug print
+            image.save(full_path)
+            image_filename = filename
+        else:
+            print("No image or not allowed file:", image)
+
+        new_listing = Sales_Listing(
+            isbn=isbn,
+            user_id=current_user.id,
+            title=title,
+            author=author,
+            price=price,
+            image_filename=image_filename,
+            description=description
+        )
+        db.session.add(new_listing)
+        db.session.commit()
+        return redirect(url_for("main.profile"))
+
     return render_template("sales_listing.html")
