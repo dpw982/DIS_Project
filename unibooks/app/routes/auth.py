@@ -11,10 +11,15 @@ def signup():
     username = request.form['username']
     password = request.form['password']
     email = request.form['email']
+    phone_number = request.form['phone_number']
+    if not phone_number:
+      flash('Phone number is required', 'error')
+      return redirect(url_for('auth.signup'))
+    
     if User.query.filter((User.username == username) | (User.email == email)).first():
       flash('Username or email already exists', 'error')
       return redirect(url_for('auth.signup'))
-    user = User(username=username, email=email)
+    user = User(username=username, email=email, phone_number=phone_number)
     user.set_password(password)
     db.session.add(user)
     db.session.commit()

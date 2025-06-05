@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 import requests
 import re
+from app.models import Sales_Listing
 
 search_bp = Blueprint("search", __name__)
 
@@ -103,4 +104,30 @@ def search_isbn():
                 "cover_url": volume.get("imageLinks", {}).get("thumbnail"),
             }
         )
+    return jsonify({"docs": results})
+
+@search_bp.route("/search_listings")
+def search_open_listings():
+    query = request.args.get("q")
+    if not query:
+        return jsonify({"error": "Missing query"}), 400
+
+    pattern = re.compile(query, re.IGNORECASE)
+    all_listings = Sales_Listing.query.all()
+    results = []
+    for sale in all_listings:
+        if (
+            pattern.search(sale.title or "")
+            or pattern.search(sale.isbn or "")
+            or pattern.search(sale.author or "")
+        ):
+            results.append({
+                "id": sale.id,
+                "title": sale.title,
+                "author": sale.author,
+                "isbn": sale.isbn,
+                "price": sale.price,
+                "image_filename": sale.image_filename,
+                "description": sale.description,
+            })
     return jsonify({"docs": results})

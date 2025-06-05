@@ -25,6 +25,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
+    phone_number = db.Column(db.String(20), nullable=True)  # Add phone number field
 
     def set_password(self, password):
         from app import bcrypt  # Import bcrypt here to avoid circular import issues
@@ -39,6 +40,7 @@ class User(UserMixin, db.Model):
             "id": self.id,
             "username": self.username,
             "email": self.email,
+            "phone_number": self.phone_number,  # Include phone number in the dict
         }
 
 class Sales_Listing(db.Model):

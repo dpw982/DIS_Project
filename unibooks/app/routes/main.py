@@ -48,6 +48,7 @@ def profile():
         username = request.form.get("username")
         email = request.form.get("email")
         password = request.form.get("password")
+        phone_number = request.form.get("phone_number")
 
         # Update username
         if username is not None:
@@ -81,6 +82,13 @@ def profile():
             db.session.commit()
             flash("Adgangskode opdateret!", "success")
             return redirect(url_for("main.profile"))
+        
+        if phone_number is not None:
+            if phone_number != current_user.phone_number:
+                current_user.phone_number = phone_number
+                db.session.commit()
+                flash("Telefonnummer opdateret!", "success")
+                return redirect(url_for("main.profile"))
 
     user_sales = Sales_Listing.query.filter_by(user_id=current_user.id).all()
 
@@ -124,3 +132,12 @@ def create_listing():
         return redirect(url_for("main.profile"))
 
     return render_template("sales_listing.html")
+
+@main_bp.route("/sales_listing/<int:listing_id>")
+@login_required
+def listing_detail(listing_id):
+    sale = Sales_Listing.query.get_or_404(listing_id)
+    seller = User.query.get(sale.user_id)
+    return render_template(
+        "listing_detail.html", sale=sale, seller=seller, user=current_user
+    )

@@ -18,9 +18,11 @@
       <h2>- En markedsplads for køb og<br> salg af brugte universitets bøger</h2>
     </div>
 
-    <div class="search-wrapper">
-      <input type="text" placeholder="Søg efter bøger, ISBN, eller forfattere...">
+    <div class="search-wrapper" style="position:relative;">
+      <input type="text" id="open-listings-search-input" placeholder="Søg efter bøger, ISBN, eller forfattere..." autocomplete="off">
+      <div id="open-listings-suggestions" class="suggestion-dropdown"></div>
     </div>
+    <div id="open-listings-results"></div>
     <div class="header-container">
       <div class="top-right-container">
         <div class="profile-dropdown">
@@ -68,24 +70,54 @@
   </div>
 
   <script>
-    let currentSlide = 0;
-    const items = document.querySelectorAll('.carousel-item');
-    function showSlide(idx) {
-      if (!items.length) return;
-      items.forEach((el, i) => el.classList.toggle('active', i === idx));
+  const input = document.getElementById('open-listings-search-input');
+  const dropdown = document.getElementById('open-listings-suggestions');
+
+  let debounceTimeout = null;
+
+  input.addEventListener('input', function() {
+    const q = input.value.trim();
+    if (debounceTimeout) clearTimeout(debounceTimeout);
+    if (!q) {
+      dropdown.classList.remove('active');
+      dropdown.innerHTML = '';
+      return;
     }
-    function prevSlide() {
-      currentSlide = (currentSlide - 1 + items.length) % items.length;
-      showSlide(currentSlide);
+    debounceTimeout = setTimeout(() => {
+      fetch(`/search_listings?q=${encodeURIComponent(q)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.docs || data.docs.length === 0) {
+            dropdown.classList.remove('active');
+            dropdown.innerHTML = '';
+            return;
+          }
+          dropdown.innerHTML = data.docs.slice(0, 8).map(sale => `
+            <div class="suggestion-item" data-id="${sale.id}">
+              <strong>${sale.title}</strong> af ${sale.author} <span style="color:#888;">(ISBN: ${sale.isbn})</span>
+            </div>
+          `).join('');
+          dropdown.classList.add('active');
+        });
+    }, 200); // debounce for 200ms
+  });
+
+  // Handle click on suggestion
+  dropdown.addEventListener('click', function(e) {
+    const item = e.target.closest('.suggestion-item');
+    if (item) {
+      const id = item.getAttribute('data-id');
+      window.location.href = `/sales_listing/${id}`;
     }
-    function nextSlide() {
-      currentSlide = (currentSlide + 1) % items.length;
-      showSlide(currentSlide);
+  });
+
+  // Hide dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!dropdown.contains(e.target) && e.target !== input) {
+      dropdown.classList.remove('active');
+      dropdown.innerHTML = '';
     }
-    setInterval(() => {
-      nextSlide();
-    }, 4000);
-    showSlide(currentSlide);
+  });
   </script>
   <div class="create-listing-btn-container">
   <a href="/create-listing" class="create-listing-btn">Opret salgsannonce</a>

@@ -68,6 +68,16 @@
         </div>
       </form>
 
+      <form method="post" action="{{ url_for('main.profile') }}">
+        <div class="edit-row">
+          <label for="phone_number"><strong>Telefonnummer:</strong></label>
+          <span>{{ user.phone_number }}</span>
+          <button type="button" class="edit-btn" onclick="toggleEdit('phone_number')">Ændr</button>
+          <input type="number" class="edit-input" id="phone_number-input" name="phone_number" placeholder="Nyt telefonnummer" style="display:none;">
+          <button type="submit" class="save-btn" id="phone_number-save" style="display:none;">Gem</button>
+        </div>
+      </form>
+
       <a href="{{ url_for('auth.logout') }}" class="logout-link">Log ud</a>
     </div>
     <!-- Move the table OUTSIDE form-inner but still inside form-container -->

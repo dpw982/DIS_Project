@@ -55,17 +55,27 @@
     </tr>
   </thead>
   <tbody>
-    {% for sale in sales %}
+    {% for sale in sales_listings %}
     <tr>
       <td>
-        {% if sale.image_filename %}
-          <img src="{{ url_for('static', filename='uploads/' ~ sale.image_filename) }}" alt="Bogbillede" style="max-width:60px; max-height:60px;">
-        {% endif %}
+        <a href="{{ url_for('main.listing_detail', listing_id=sale.id) }}">
+          {% if sale.image_filename %}
+            <img src="{{ url_for('static', filename='uploads/' ~ sale.image_filename) }}" alt="Bogbillede" style="max-width:60px; max-height:60px;">
+          {% endif %}
+        </a>
       </td>
-      <td>{{ sale.title }}</td>
-      <td>{{ sale.author }}</td>
-      <td>{{ sale.isbn }}</td>
-      <td>{{ sale.price }} kr.</td>
+      <td>
+        <a href="{{ url_for('main.listing_detail', listing_id=sale.id) }}">{{ sale.title }}</a>
+      </td>
+      <td>
+        <a href="{{ url_for('main.listing_detail', listing_id=sale.id) }}">{{ sale.author }}</a>
+      </td>
+      <td>
+        <a href="{{ url_for('main.listing_detail', listing_id=sale.id) }}">{{ sale.isbn }}</a>
+      </td>
+      <td>
+        <a href="{{ url_for('main.listing_detail', listing_id=sale.id) }}">{{ sale.price }} kr.</a>
+      </td>
     </tr>
     {% else %}
     <tr>
