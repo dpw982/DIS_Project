@@ -1,22 +1,30 @@
-Prerequisites:
+How to run (Docker):
 
-To create virtual environment MACOS run this in the terminal in unibooks directory :
-  python3.12 -m venv venv 
+1) Make sure that Docker is installed and running on your machine (no other dependencies are needed)
 
-Then activate the virtual environment by
-  source venv/bin/activate
+2) Open a terminal and move to the root directory DIS_Project
+    cd /path/to/DIS_Project
 
-Install dependencies for the virtual environment by
-  pip install -r requirements.txt
+3) Build and start the web-app with:
+    docker-compose up --build
 
-To run the project
-  python3 run.py
+4) Open your browser and go to:
+    http://localhost:5001/
 
-Find the frontend in the browser on http://127.0.0.1:5000
-If you keep it running and make changes to the files, you can simply reload to see them in browser.
+5) When finished the app terminates with Ctrl+C in terminal and 
+    docker-compose down
 
-You will need to add a .env file in the unibooks directory. This should just contain
-  DATABASE_URL=postgresql://postgres:passwordtildinpostgresql@localhost:5432/unibooksdb
+__________________________________________________________________________________
 
-It works only after creating the database in psql named unibooksdb, then flask when run, will create all relevant tables.
+Our web-app UniBooks is a marketplace for selling and buying used University books.
+It has signup/login logic, for users, and allows for making sales listings. In sales listings
+we utilize a google api for suggesting books based on isbn or title, while also suggesting an
+autofilled image of the book. The user is then prompted to enter a price and a description of the book.
+Users can Buy books, looking through a selection of books on the home page, or entering the Buy book page.
+Here every sales postings are shown, along with some of it's information. If interested the user can press on a listing
+to find contact information about the seller. The home page also includes a search field, which uses an regex
+to match on posted sales listings.
 
+___________________________________________________________________________________
+
+![alt text](/unibooks/app/static/img/ER.png)

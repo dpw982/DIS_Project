@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: unibooks
+      POSTGRES_PASSWORD: unibooks
+      POSTGRES_DB: unibooks
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  web:
+    build: .
+    command: flask run --host=0.0.0.0
+    volumes:
+      - .:/app
+    ports:
+      - "5001:5000"
+    environment:
+      FLASK_APP: unibooks/run.py
+      FLASK_ENV: development
+      DATABASE_URL: postgresql://unibooks:unibooks@db:5432/unibooks
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
